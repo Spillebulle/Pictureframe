@@ -1,0 +1,119 @@
+# Push a tag vX.Y.Z (matching manifest.json and a "## X.Y.Z" CHANGELOG section)
+# and this packages the extension, makes the GitHub release, and, once the
+# store is configured, uploads and submits it to the Chrome Web Store.
+#
+# Store configuration (skipped until all three exist):
+#   secret   CWS_SERVICE_ACCOUNT_KEY  JSON key of the service account linked in the dashboard
+#   variable CWS_PUBLISHER_ID         Developer Dashboard > Publisher > Settings
+#   variable CWS_EXTENSION_ID         the item's 32-letter ID
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check version
+        id: v
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          manifest=$(jq -r .version manifest.json)
+          if [ "$version" != "$manifest" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match manifest.json version $manifest."
+            exit 1
+          fi
+          awk -v v="$version" '
+            $0 ~ "^## " { if (found) exit; if ($2 == v) { found = 1; next } }
+            found { print }
+          ' CHANGELOG.md | sed '/./,$!d' > notes.md
+          if [ ! -s notes.md ]; then
+            echo "::error::CHANGELOG.md has no '## $version' section."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "zip=pictureframe-$version.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Package
+        run: |
+          zip -r -X "${{ steps.v.outputs.zip }}" \
+            manifest.json background.js tokens.css \
+            content popup options icons fonts
+          unzip -l "${{ steps.v.outputs.zip }}"
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "${{ steps.v.outputs.zip }}" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "${{ steps.v.outputs.zip }}" \
+              --title "${{ steps.v.outputs.version }}" --notes-file notes.md
+          fi
+
+      - name: Chrome Web Store
+        env:
+          KEY: ${{ secrets.CWS_SERVICE_ACCOUNT_KEY }}
+          PUBLISHER: ${{ vars.CWS_PUBLISHER_ID }}
+          ITEM: ${{ vars.CWS_EXTENSION_ID }}
+          ZIP: ${{ steps.v.outputs.zip }}
+        run: |
+          if [ -z "$KEY" ] || [ -z "$PUBLISHER" ] || [ -z "$ITEM" ]; then
+            echo "::notice::Chrome Web Store is not configured; skipped. The zip is on the GitHub release."
+            exit 0
+          fi
+          set -euo pipefail
+
+          # Service account JWT -> access token, no third-party action.
+          b64url() { openssl base64 -A | tr '+/' '-_' | tr -d '='; }
+          email=$(jq -r .client_email <<<"$KEY")
+          jq -r .private_key <<<"$KEY" > key.pem
+          now=$(date +%s)
+          header=$(printf '{"alg":"RS256","typ":"JWT"}' | b64url)
+          claims=$(jq -nc --arg iss "$email" --argjson iat "$now" '{
+            iss: $iss, scope: "https://www.googleapis.com/auth/chromewebstore",
+            aud: "https://oauth2.googleapis.com/token", iat: $iat, exp: ($iat + 600)
+          }' | b64url)
+          sig=$(printf '%s.%s' "$header" "$claims" | openssl dgst -sha256 -sign key.pem | b64url)
+          rm key.pem
+          token=$(curl -sS --fail-with-body https://oauth2.googleapis.com/token \
+            -d grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer \
+            -d assertion="$header.$claims.$sig" | jq -r .access_token)
+          echo "::add-mask::$token"
+
+          api=https://chromewebstore.googleapis.com
+          item="publishers/$PUBLISHER/items/$ITEM"
+          auth="Authorization: Bearer $token"
+
+          echo "Uploading $ZIP"
+          upload=$(curl -sS --fail-with-body -X POST -H "$auth" \
+            -H 'Content-Type: application/zip' --data-binary "@$ZIP" \
+            "$api/upload/v2/$item:upload")
+          echo "$upload"
+          state=$(jq -r .uploadState <<<"$upload")
+          for _ in $(seq 1 30); do
+            [ "$state" = "IN_PROGRESS" ] || [ "$state" = "UPLOAD_IN_PROGRESS" ] || break
+            sleep 10
+            state=$(curl -sS --fail-with-body -H "$auth" "$api/v2/$item:fetchStatus" | jq -r .lastAsyncUploadState)
+            echo "Upload state: $state"
+          done
+          if [ "$state" != "SUCCEEDED" ]; then
+            echo "::error::Upload ended in state $state."
+            exit 1
+          fi
+
+          echo "Submitting for review"
+          publish=$(curl -sS --fail-with-body -X POST -H "$auth" \
+            -H 'Content-Type: application/json' -d '{"publishType":"DEFAULT_PUBLISH"}' \
+            "$api/v2/$item:publish")
+          echo "$publish"
+          echo "::notice::Submitted to the Chrome Web Store: $(jq -r .state <<<"$publish"). It goes live when review passes."

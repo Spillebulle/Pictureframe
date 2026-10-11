@@ -31,6 +31,23 @@ The README banner can be re-measured with the house tool:
 python "../Design-Principles/banner.py" --check docs/images/banner.png --name PICTUREFRAME
 ```
 
+## Releasing
+
+Bump `version` in `manifest.json`, add a `## X.Y.Z` section to `CHANGELOG.md`
+(3–8 user-facing bullets), commit, then `git tag vX.Y.Z && git push --tags`.
+`.github/workflows/release.yml` refuses a tag that disagrees with the manifest
+or has no changelog section, zips only the runtime files (`manifest.json`,
+`background.js`, `tokens.css`, `content/ popup/ options/ icons/ fonts/` — a
+new top-level runtime file must be added to that list), makes the GitHub
+release titled with the bare version, then uploads to the Chrome Web Store
+API v2 and submits for review. The store step signs its own service-account
+JWT with `openssl` and is skipped with a notice until the secret
+`CWS_SERVICE_ACCOUNT_KEY` and variables `CWS_PUBLISHER_ID` /
+`CWS_EXTENSION_ID` exist. The store listing itself (description,
+screenshots, privacy tab) is only editable in the Developer Dashboard. A
+failed store step can be retried with "Re-run failed jobs"; the release step
+is idempotent.
+
 ## Architecture
 
 Five content scripts are injected **in order** at `document_start` into **all
