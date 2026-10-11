@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- Demo page for the Chrome Web Store screenshots (docs/store/shots.py). Not shipped. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Field notes: Skye in October</title>
+<style>
+  body { margin: 0; background: #f6f3ee; color: #2b2925; font: 17px/1.6 Georgia, "Times New Roman", serif; }
+  header { border-bottom: 1px solid #e2ddd4; padding: 18px 0; text-align: center; font: 600 14px/1 system-ui, sans-serif; letter-spacing: 3px; text-transform: uppercase; color: #6b665d; }
+  main { max-width: 860px; margin: 0 auto; padding: 36px 24px 80px; }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 8px; font-weight: 600; }
+  .byline { font: 14px/1.4 system-ui, sans-serif; color: #8a847a; margin-bottom: 28px; }
+  img { display: block; width: 100%; height: auto; border-radius: 3px; }
+  .hero { aspect-ratio: 16 / 9; object-fit: cover; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+  .pair img { aspect-ratio: 4 / 3; object-fit: cover; }
+  figcaption { font: 13px/1.4 system-ui, sans-serif; color: #8a847a; margin-top: 6px; }
+  canvas { display: block; width: 100%; height: 220px; background: #fff; border: 1px solid #e2ddd4; border-radius: 3px; }
+</style>
+</head>
+<body>
+<header>Field notes</header>
+<main>
+  <h1>Four days on Skye, chasing the light</h1>
+  <div class="byline">Photographs from Unsplash · 12 October</div>
+  <figure style="margin:0">
+    <img class="hero" src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=2000&q=85" alt="Mist rolling off the Quiraing at dawn">
+    <figcaption>The Quiraing at dawn, before the cloud lifted.</figcaption>
+  </figure>
+  <p>We walked in before sunrise, head torches off by the second stile. The cloud sat on the ridge for an hour and then went all at once, the way it does up there, and the whole valley turned gold for about four minutes.</p>
+  <div class="pair">
+    <figure style="margin:0">
+      <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1400&q=85" alt="Spiral of stones in a green glen">
+      <figcaption>The Fairy Glen, late afternoon.</figcaption>
+    </figure>
+    <figure style="margin:0">
+      <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=85" alt="Rock towers on a hillside at sunrise">
+      <figcaption>Old Man of Storr from the lower path.</figcaption>
+    </figure>
+  </div>
+  <p>Elevation over the four days, from the watch:</p>
+  <canvas id="elev" width="1624" height="440"></canvas>
+</main>
+<script>
+  const c = document.getElementById('elev'), g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  g.strokeStyle = '#ece8e1'; g.lineWidth = 2;
+  for (let y = 60; y < 440; y += 80) { g.beginPath(); g.moveTo(0, y); g.lineTo(c.width, y); g.stroke(); }
+  const pts = []; for (let i = 0; i <= 160; i++) {
+    const x = i / 160 * c.width;
+    const h = 300 - 140 * Math.sin(i / 14) * Math.sin(i / 37) - 60 * Math.sin(i / 5.3) * 0.4 - (i > 60 && i < 100 ? 90 * Math.sin((i - 60) / 40 * Math.PI) : 0);
+    pts.push([x, h]);
+  }
+  g.beginPath(); g.moveTo(0, 440); pts.forEach(([x, y]) => g.lineTo(x, y)); g.lineTo(c.width, 440); g.closePath();
+  g.fillStyle = 'rgba(106, 76, 206, 0.14)'; g.fill();
+  g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y));
+  g.strokeStyle = '#6a4cce'; g.lineWidth = 4; g.stroke();
+</script>
+</body>
+</html>

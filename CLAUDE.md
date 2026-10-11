@@ -48,6 +48,13 @@ screenshots, privacy tab) is only editable in the Developer Dashboard. A
 failed store step can be retried with "Re-run failed jobs"; the release step
 is idempotent.
 
+`docs/store/` holds what only the dashboard accepts: `listing.md` (text to
+paste, permission justifications), the five 1280 × 800 screenshots and the
+440 × 280 tile. `python docs/store/shots.py` regenerates the screenshots from
+`demo.html` with the real extension loaded; rerun it when the UI changes.
+`docs/privacy.md` is the privacy policy the listing links to; keep it true
+if a permission or a network call is added.
+
 ## Architecture
 
 Five content scripts are injected **in order** at `document_start` into **all

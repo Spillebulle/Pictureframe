@@ -99,9 +99,15 @@
   pointer-events: auto;
 }
 
+/* A will-change layer is scaled by the compositor as a bitmap, which smooths
+   it no matter what image-rendering says. Drop the layer once pixels matter. */
+.pf-image-canvas.pf-pixelated {
+  will-change: auto;
+}
+
 .pf-image-canvas.pf-pixelated img {
-  image-rendering: pixelated;
   image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 /* Floating Top Toolbar */

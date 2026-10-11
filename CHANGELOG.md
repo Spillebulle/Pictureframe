@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- Zooming past 4× shows sharp pixels again instead of a blur.
+- The corner button no longer shows while you are picking an element to report.
+
 ## 1.0.1
 
 - Shorter extension description, so the Chrome Web Store accepts the package.

@@ -114,7 +114,7 @@
     if (!document.getElementById(CURSOR_STYLE_ID)) {
       const st = document.createElement('style');
       st.id = CURSOR_STYLE_ID;
-      st.textContent = '*, *::before, *::after { cursor: crosshair !important; }';
+      st.textContent = '*, *::before, *::after { cursor: crosshair !important; } #pictureframe-hover-badge { display: none !important; }';
       (document.head || document.documentElement).appendChild(st);
     }
 
