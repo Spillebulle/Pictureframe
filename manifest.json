@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Pictureframe - Image Viewer & Inspector",
-  "version": "1.0.0",
-  "description": "Click any image to preview, pan, and cursor-centered zoom. Smart click detection, right-click unblocker, and high-res image downloader.",
+  "version": "1.0.1",
+  "description": "Click any picture to open it fullscreen with cursor zoom, pan and rotate. Unblocks right click and sees through image shields.",
   "permissions": [
     "storage",
     "contextMenus",

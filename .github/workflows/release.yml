@@ -31,6 +31,13 @@ jobs:
             echo "::error::Tag $GITHUB_REF_NAME does not match manifest.json version $manifest."
             exit 1
           fi
+          # Chrome Web Store limits, checked here so the upload is not where we find out.
+          desc_len=$(jq -r '.description | length' manifest.json)
+          name_len=$(jq -r '.name | length' manifest.json)
+          if [ "$desc_len" -gt 132 ] || [ "$name_len" -gt 75 ]; then
+            echo "::error::manifest.json description is $desc_len chars (max 132), name is $name_len (max 75)."
+            exit 1
+          fi
           awk -v v="$version" '
             $0 ~ "^## " { if (found) exit; if ($2 == v) { found = 1; next } }
             found { print }

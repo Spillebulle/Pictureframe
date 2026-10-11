@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Shorter extension description, so the Chrome Web Store accepts the package.
+
 ## 1.0.0
 
 - Click a plain picture to open it in a fullscreen viewer; links, buttons and site galleries keep their clicks.
