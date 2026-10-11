@@ -1,0 +1,421 @@
+@font-face {
+  font-family: "Archivo";
+  src: url("../fonts/Archivo.ttf") format("truetype");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 292px;
+  background-color: var(--window);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: var(--lh);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Top Bar (§7.1) ──────────────────────────────────────────────────────── */
+.topbar {
+  height: var(--h-menubar);
+  background: var(--chrome);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--pad-strip);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mark {
+  width: var(--mark);
+  height: var(--mark);
+  border-radius: var(--r-tight);
+  display: block;
+}
+
+.appname {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--text-strong);
+  letter-spacing: -0.01em;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line-soft);
+  gap: 12px;
+}
+
+.row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.label {
+  font-size: var(--text-control);
+  font-weight: 500;
+  color: var(--text-strong);
+  cursor: pointer;
+}
+
+.desc {
+  font-size: var(--text-tiny);
+  color: var(--text-muted);
+}
+
+/* ── Toggle Switch (§7.8: 34 × 18, radius 9) ─────────────────────────────── */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.pill {
+  position: absolute;
+  inset: 0;
+  background-color: var(--rail);
+  border-radius: 9px;
+  transition: background-color var(--t-hover) var(--ease);
+}
+
+.pill::before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--knob);
+  border-radius: 50%;
+  box-shadow: var(--shadow-knob);
+  transition: transform var(--t-open) var(--ease);
+}
+
+input:checked + .pill {
+  background-color: var(--accent);
+}
+
+input:checked + .pill::before {
+  transform: translateX(16px);
+}
+
+/* ── Painted Dropdown (§7.7, styleguide.src.html) ────────────────────────── */
+.ddwrap {
+  position: relative;
+  display: inline-block;
+}
+
+.dd.alone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 26px;
+  padding: 0 8px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  font-family: var(--font-ui);
+  font-size: var(--text-control);
+  color: var(--text);
+  cursor: pointer;
+  min-width: 116px;
+  outline: none;
+  transition: border-color var(--t-hover) var(--ease), box-shadow var(--t-hover) var(--ease);
+}
+
+.dd.alone:hover, .dd.alone:focus {
+  border-color: var(--line-dashed);
+}
+
+.dd.alone.open {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+.dd .v {
+  color: var(--text-strong);
+  font-weight: 500;
+}
+
+.dd .chev {
+  width: 12px;
+  height: 12px;
+  color: var(--text-dim);
+  transition: transform var(--t-hover) var(--ease);
+  flex: none;
+}
+
+.dd.alone.open .chev {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu List (§7.1: popover fill, line-popover edge, radius 8, shadow-menu) */
+.menu.ddlist {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 100%;
+  width: max-content;
+  background: var(--popover);
+  border: 1px solid var(--line-popover);
+  border-radius: var(--r-card);
+  padding: 4px;
+  box-shadow: var(--shadow-menu);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.menu .it {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: var(--text-control);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--t-hover) var(--ease), color var(--t-hover) var(--ease);
+}
+
+.menu .it:hover {
+  background: var(--control-hover);
+  color: var(--text-strong);
+}
+
+.menu .it.cur {
+  background: var(--control);
+  color: var(--text-strong);
+  font-weight: 500;
+}
+
+.menu .it .chk {
+  width: 12px;
+  height: 12px;
+  color: var(--accent);
+  stroke: currentColor;
+  flex: none;
+}
+
+/* ── Stacked Slider (§7.10) ──────────────────────────────────────────────── */
+.slider-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 0 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mono.figure {
+  font-family: var(--font-figure);
+  font-size: var(--text-tiny);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.rail-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 16px;
+}
+
+.rail-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--rail);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+}
+
+.rail-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--knob);
+  box-shadow: var(--shadow-knob);
+  cursor: pointer;
+  transition: transform var(--t-hover) var(--ease);
+}
+
+.rail-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* ── Well & Shortcuts Box (§7.5, §7.13) ──────────────────────────────────── */
+.well {
+  background: var(--dock);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 8px 10px;
+  margin-top: 2px;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--placeholder);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 8px;
+  font-size: var(--text-tiny);
+  color: var(--text-muted);
+}
+
+.shortcuts-grid div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+kbd {
+  background: var(--control);
+  border: 1px solid var(--line);
+  border-radius: var(--r-tight);
+  padding: 1px 4px;
+  font-family: var(--font-figure);
+  font-size: 10px;
+  color: var(--text-strong);
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ── Footer Bar (§7.1) ───────────────────────────────────────────────────── */
+.footbar {
+  height: 28px;
+  background: var(--chrome);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footlink {
+  font-size: var(--text-tiny);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--t-hover) var(--ease);
+}
+
+.footlink:hover {
+  color: var(--text-strong);
+  text-decoration: none;
+}
+
+/* ── Misfire Reporter ────────────────────────────────────────────────────── */
+.report-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 0 8px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.report-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.btn {
+  height: var(--h-button);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px;
+  background: var(--control);
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  font-family: var(--font-ui);
+  font-size: var(--text-control);
+  font-weight: 500;
+  color: var(--text-strong);
+  cursor: pointer;
+  transition: background var(--t-hover) var(--ease), border-color var(--t-hover) var(--ease);
+}
+
+.btn:hover {
+  background: var(--control-hover);
+  border-color: var(--line-dashed);
+}
+
+.btn .i {
+  color: var(--accent);
+  flex: none;
+}
+
+.report-error {
+  color: var(--text-dim);
+}
+
+.desclink {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--line-dashed);
+}
+
+.desclink:hover {
+  color: var(--text-strong);
+}

@@ -1,0 +1,66 @@
+{
+  "manifest_version": 3,
+  "name": "Pictureframe - Image Viewer & Inspector",
+  "version": "1.0.0",
+  "description": "Click any image to preview, pan, and cursor-centered zoom. Smart click detection, right-click unblocker, and high-res image downloader.",
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "downloads"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content/unblocker.js",
+        "content/extractor.js",
+        "content/viewer.js",
+        "content/content.js",
+        "content/reporter.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "content/viewer.css",
+        "tokens.css",
+        "fonts/*",
+        "icons/*.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Pictureframe Settings"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

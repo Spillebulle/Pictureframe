@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pictureframe — Test Suite</title>
+  <link rel="stylesheet" href="tokens.css">
+  <style>
+    @font-face {
+      font-family: "Archivo";
+      src: url("fonts/Archivo.ttf") format("truetype");
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+      font-display: swap;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--window);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: var(--text-body);
+      line-height: var(--lh);
+      padding: 32px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-ctl);
+      display: block;
+    }
+
+    h1 {
+      font-size: var(--text-page);
+      font-weight: 600;
+      color: var(--text-strong);
+    }
+
+    p.lead {
+      font-size: var(--text-small);
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--chrome);
+      border: 1px solid var(--line);
+      border-radius: var(--r-card);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card h3 {
+      font-size: var(--text-heading);
+      color: var(--text-strong);
+      font-weight: 600;
+    }
+
+    .card p {
+      font-size: var(--text-tiny);
+      color: var(--text-muted);
+    }
+
+    .card img, .card canvas, .card .bg-box {
+      border-radius: var(--r-tight);
+      max-width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      border: 1px solid var(--line-soft);
+    }
+
+    .bg-box {
+      background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');
+      background-size: cover;
+      background-position: center;
+      width: 100%;
+    }
+
+    .overlay-wrapper {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      border-radius: var(--r-tight);
+      overflow: hidden;
+      border: 1px solid var(--line-soft);
+    }
+
+    .overlay-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: none;
+    }
+
+    .overlay-shield {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      z-index: 10;
+      cursor: not-allowed;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      font-size: 10.5px;
+      border-radius: var(--r-tight);
+      font-weight: 500;
+      width: fit-content;
+      font-family: var(--font-figure);
+    }
+
+    .badge-test { background: var(--control); color: var(--text-strong); }
+    .badge-protect { background: var(--caution-bg); color: var(--caution); }
+    .badge-link { background: var(--dock); color: var(--accent); border: 1px solid var(--line); }
+
+    kbd {
+      background: var(--control);
+      border: 1px solid var(--line);
+      border-radius: var(--r-tight);
+      padding: 1px 4px;
+      font-family: var(--font-figure);
+      font-size: 10.5px;
+      color: var(--text-strong);
+    }
+
+    code {
+      background: var(--control);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: var(--font-figure);
+      font-size: 10.5px;
+      color: var(--text-strong);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="icons/icon32.png" class="mark" alt="Pictureframe mark" />
+    <div>
+      <h1>Pictureframe — Test Suite</h1>
+      <p class="lead">Verify cursor-anchored zoom, smart click detection, right click unblocking, and overlay penetration.</p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- Test 1: Standard Standalone Image -->
+    <div class="card">
+      <span class="badge badge-test">Test 1 · Standard image</span>
+      <h3>Direct click and zoom</h3>
+      <p>Single click opens Pictureframe. Use mouse wheel to zoom into specific details (anchored to cursor). Drag to pan.</p>
+      <img src="https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?auto=format&fit=crop&w=1600&q=80" alt="Aurora Borealis" />
+    </div>
+
+    <!-- Test 2: Image inside an <a> link -->
+    <div class="card">
+      <span class="badge badge-link">Test 2 · Wrapped in link</span>
+      <h3>Smart conflict detection</h3>
+      <p>Clicking directly lets the page navigate. Hold <kbd>Alt</kbd> + click (or click the top-right hover badge) to force Pictureframe.</p>
+      <a href="https://unsplash.com" target="_blank">
+        <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1600&q=80" alt="Mountain Landscape" />
+      </a>
+    </div>
+
+    <!-- Test 3: Anti-Right-Click Protection -->
+    <div class="card">
+      <span class="badge badge-protect">Test 3 · Blocked context menu</span>
+      <h3>Right click unblocker</h3>
+      <p>This image has <code>oncontextmenu="return false;"</code>. Pictureframe neutralises the blocker so you can right click, save, or copy.</p>
+      <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1600&q=80" 
+           alt="Green Hills" 
+           oncontextmenu="alert('Website attempted to block right click.'); return false;" />
+    </div>
+
+    <!-- Test 4: Transparent Overlay Protection -->
+    <div class="card">
+      <span class="badge badge-protect">Test 4 · Transparent overlay shield</span>
+      <h3>Shield penetration</h3>
+      <p>An invisible <code>&lt;div&gt;</code> sits over this image. Pictureframe penetrates it to inspect and download the real image.</p>
+      <div class="overlay-wrapper">
+        <div class="overlay-shield" title="Transparent overlay shield"></div>
+        <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80" alt="Nature Vista" />
+      </div>
+    </div>
+
+    <!-- Test 5: CSS Background Image -->
+    <div class="card">
+      <span class="badge badge-test">Test 5 · CSS background</span>
+      <h3>CSS background-image extraction</h3>
+      <p>This is a <code>&lt;div&gt;</code> with a CSS background image. Pictureframe extracts the high resolution URL cleanly.</p>
+      <div class="bg-box"></div>
+    </div>
+
+    <!-- Test 6: HTML5 Canvas -->
+    <div class="card">
+      <span class="badge badge-test">Test 6 · HTML5 canvas</span>
+      <h3>Canvas rendering and export</h3>
+      <p>Rendered dynamically to a canvas. Pictureframe can preview, zoom, copy, and export it as a PNG.</p>
+      <canvas id="testCanvas" width="600" height="360"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('testCanvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 600, 360);
+      grad.addColorStop(0, '#1e2023');
+      grad.addColorStop(0.5, '#6a4cce');
+      grad.addColorStop(1, '#111214');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 600, 360);
+
+      ctx.fillStyle = '#e6e7e9';
+      ctx.font = '600 24px Archivo, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Pictureframe Canvas Inspector', 300, 160);
+
+      ctx.fillStyle = '#9a9da2';
+      ctx.font = '14px Archivo, sans-serif';
+      ctx.fillText('Dynamic render · Inspect and download', 300, 200);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pictureframe</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Top Bar (§7.1, §11) -->
+  <header class="topbar">
+    <div class="brand">
+      <img src="../icons/icon16.png" class="mark" alt="Pictureframe mark" />
+      <span class="appname">Pictureframe</span>
+    </div>
+    <label class="toggle" title="Toggle Pictureframe">
+      <input type="checkbox" id="enabled" checked>
+      <span class="pill"></span>
+    </label>
+  </header>
+
+  <!-- Content Stack (§7, §9) -->
+  <main class="content">
+    <div class="row">
+      <div class="row-info">
+        <label for="smartClickEnabled" class="label">Smart click detection</label>
+        <span class="desc">Yield to existing webpage click handlers.</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="smartClickEnabled" checked>
+        <span class="pill"></span>
+      </label>
+    </div>
+
+    <!-- Painted Dropdown (§7.7) -->
+    <div class="row">
+      <div class="row-info">
+        <span class="label">Force modifier key</span>
+        <span class="desc">Bypass links and force preview.</span>
+      </div>
+      <div class="ddwrap" id="modifierKeyWrap">
+        <div class="dd alone" id="modifierKeyTrigger" tabindex="0" role="combobox" aria-expanded="false" title="Select modifier key">
+          <span class="v" id="modifierKeyLabel">Alt + click</span>
+          <svg class="i chev" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="menu ddlist exact" id="modifierKeyMenu" role="listbox" style="display:none;">
+          <div class="it cur" data-value="Alt" role="option">
+            <span>Alt + click</span>
+            <svg class="i chk" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="it" data-value="Shift" role="option">
+            <span>Shift + click</span>
+            <svg class="i chk" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="it" data-value="Ctrl" role="option">
+            <span>Ctrl + click</span>
+            <svg class="i chk" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="it" data-value="None" role="option">
+            <span>None (direct)</span>
+            <svg class="i chk" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        </div>
+        <input type="hidden" id="modifierKey" value="Alt">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="row-info">
+        <label for="hoverIconEnabled" class="label">Hover quick button</label>
+        <span class="desc">Discreet mark on image corner.</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="hoverIconEnabled" checked>
+        <span class="pill"></span>
+      </label>
+    </div>
+
+    <div class="row">
+      <div class="row-info">
+        <label for="unblockRightClick" class="label">Unblock right click</label>
+        <span class="desc">Defeat save blockers and shield overlays.</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="unblockRightClick" checked>
+        <span class="pill"></span>
+      </label>
+    </div>
+
+    <!-- Stacked Slider (§7.10) -->
+    <div class="slider-block">
+      <div class="slider-head">
+        <span class="label">Zoom sensitivity</span>
+        <span class="mono figure" id="zoomSpeedVal">1.18×</span>
+      </div>
+      <div class="rail-wrap">
+        <input type="range" id="zoomSpeed" min="1.05" max="1.50" step="0.01" value="1.18" class="rail-input">
+      </div>
+    </div>
+
+    <!-- Misfire reporter: eyedropper into the page -->
+    <div class="report-block">
+      <div class="row-info">
+        <span class="label">Report a misfire</span>
+        <span class="desc">Pick the element, then paste the report into a <a href="https://github.com/Spillebulle/Pictureframe/issues" target="_blank" class="desclink">GitHub issue</a>.</span>
+      </div>
+      <div class="report-actions">
+        <button type="button" class="btn" data-report="false_positive" title="It opened, but should not have.">
+          <svg class="i" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m2 22 1-1h3l9-9"></path>
+            <path d="M3 21v-3l9-9"></path>
+            <path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"></path>
+          </svg>
+          Opened wrongly
+        </button>
+        <button type="button" class="btn" data-report="false_negative" title="It should open, but did not.">
+          <svg class="i" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m2 22 1-1h3l9-9"></path>
+            <path d="M3 21v-3l9-9"></path>
+            <path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"></path>
+          </svg>
+          Did not open
+        </button>
+      </div>
+      <span class="desc report-error" id="reportError" hidden></span>
+    </div>
+
+    <!-- Shortcuts Well (§7.13) -->
+    <div class="well">
+      <div class="eyebrow">Viewer shortcuts</div>
+      <div class="shortcuts-grid">
+        <div><kbd>Scroll</kbd> <span>Zoom at cursor</span></div>
+        <div><kbd>Drag</kbd> <span>Pan around</span></div>
+        <div><kbd>Esc</kbd> <span>Close</span></div>
+        <div><kbd>F</kbd> <span>Fit to screen</span></div>
+        <div><kbd>1</kbd> <span>100% size</span></div>
+        <div><kbd>R</kbd> <span>Rotate 90°</span></div>
+        <div><kbd>C</kbd> <span>Copy image</span></div>
+        <div><kbd>D</kbd> <span>Download</span></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer Strip (§7.1) -->
+  <footer class="footbar">
+    <a href="#" id="openOptions" class="footlink">Advanced options</a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pictureframe — Settings</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="shell">
+    <!-- Header Strip (§7.1, §9) -->
+    <header class="header">
+      <div class="brand">
+        <img src="../icons/icon32.png" class="mark" alt="Pictureframe mark" />
+        <div>
+          <h1 class="title">Pictureframe</h1>
+          <p class="subtitle">Image viewer, cursor-anchored zoom and right click unblocker.</p>
+        </div>
+      </div>
+      <button id="saveBtn" class="btn-primary">Save changes</button>
+    </header>
+
+    <!-- Settings Sections (§9) -->
+    <main class="stack">
+      <!-- Section 1: Activation -->
+      <section class="card">
+        <header class="card-head">
+          <h2>Click and activation</h2>
+        </header>
+
+        <div class="form-row">
+          <div class="form-info">
+            <label for="smartClickEnabled" class="label">Smart click detection</label>
+            <p class="desc">Yields to links, gallery scripts, and interactive webpage elements. If disabled, Pictureframe may intercept all image clicks.</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="smartClickEnabled">
+            <span class="pill"></span>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-info">
+            <label for="modifierKey" class="label">Force modifier key</label>
+            <p class="desc">Holding this key while clicking will always open Pictureframe, even if the image is an active link or in a gallery.</p>
+          </div>
+          <div class="ddwrap" id="modifierKeyWrap">
+            <div class="dd alone" id="modifierKeyTrigger" tabindex="0" role="combobox" aria-expanded="false" title="Select modifier key">
+              <span class="v" id="modifierKeyLabel">Alt + click (recommended)</span>
+              <svg class="i chev" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="menu ddlist exact" id="modifierKeyMenu" role="listbox" style="display:none;">
+              <div class="it cur" data-value="Alt" role="option">
+                <span>Alt + click (recommended)</span>
+                <svg class="i chk" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="it" data-value="Shift" role="option">
+                <span>Shift + click</span>
+                <svg class="i chk" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="it" data-value="Ctrl" role="option">
+                <span>Ctrl / Cmd + click</span>
+                <svg class="i chk" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="it" data-value="None" role="option">
+                <span>None (direct click only)</span>
+                <svg class="i chk" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            <input type="hidden" id="modifierKey" value="Alt">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-info">
+            <label for="hoverIconEnabled" class="label">Hover quick button</label>
+            <p class="desc">Shows a discreet magnifying mark in the corner of images when hovered, allowing one-click preview without conflicts.</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="hoverIconEnabled">
+            <span class="pill"></span>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-info">
+            <label for="hoverIconMinSize" class="label">Minimum image size for hover icon (px)</label>
+            <p class="desc">Prevents the hover icon from cluttering small thumbnails, avatars, or icons.</p>
+          </div>
+          <input type="number" id="hoverIconMinSize" class="number-input" min="30" max="500" step="10" value="100">
+        </div>
+      </section>
+
+      <!-- Section 2: Right Click Unblocking -->
+      <section class="card">
+        <header class="card-head">
+          <h2>Right click and image protection</h2>
+        </header>
+
+        <div class="form-row">
+          <div class="form-info">
+            <label for="unblockRightClick" class="label">Unblock right click and context menus</label>
+            <p class="desc">Neutralises anti-save scripts, disables contextmenu blockers, and restores native image saving across all websites.</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="unblockRightClick">
+            <span class="pill"></span>
+          </label>
+        </div>
+
+        <div class="notice">
+          <strong>Protection bypass:</strong> Pictureframe intercepts context menu blockers in the capture phase before webpage scripts execute. It also penetrates transparent <code>&lt;div&gt;</code> shield overlays placed over images to prevent saving.
+        </div>
+      </section>
+
+      <!-- Section 3: Viewer Controls -->
+      <section class="card">
+        <header class="card-head">
+          <h2>Viewer and zoom controls</h2>
+        </header>
+
+        <div class="form-row">
+          <div class="form-info">
+            <label for="zoomSpeed" class="label">Zoom sensitivity</label>
+            <p class="desc">Rate of magnification per mouse wheel tick.</p>
+          </div>
+          <div class="slider-row">
+            <input type="range" id="zoomSpeed" min="1.05" max="1.50" step="0.01" value="1.18" class="rail-input">
+            <span id="zoomSpeedLabel" class="mono figure">1.18×</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-info">
+            <label for="invertZoom" class="label">Invert scroll wheel zoom</label>
+            <p class="desc">Reverse wheel direction (zoom in on scroll down).</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="invertZoom">
+            <span class="pill"></span>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-info">
+            <label for="backdropOpacity" class="label">Backdrop darkness</label>
+            <p class="desc">Opacity of the fullscreen backdrop (50% to 100%).</p>
+          </div>
+          <div class="slider-row">
+            <input type="range" id="backdropOpacity" min="0.50" max="1.00" step="0.02" value="0.90" class="rail-input">
+            <span id="backdropOpacityLabel" class="mono figure">90%</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-info">
+            <label for="closeOnBackdropClick" class="label">Close on backdrop click</label>
+            <p class="desc">Clicking the dimmed area outside the image closes the viewer.</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="closeOnBackdropClick">
+            <span class="pill"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Section 4: Keyboard Shortcuts -->
+      <section class="card">
+        <header class="card-head">
+          <h2>Keyboard shortcuts quick reference</h2>
+        </header>
+        <table class="t">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th class="n">Key or gesture</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Zoom to mouse pointer</td>
+              <td class="n"><kbd>Mouse scroll wheel</kbd></td>
+            </tr>
+            <tr>
+              <td>Pan and drag image</td>
+              <td class="n"><kbd>Left click + drag</kbd></td>
+            </tr>
+            <tr>
+              <td>Close lightbox</td>
+              <td class="n"><kbd>Escape</kbd></td>
+            </tr>
+            <tr>
+              <td>Fit to screen</td>
+              <td class="n"><kbd>F</kbd> or <kbd>0</kbd></td>
+            </tr>
+            <tr>
+              <td>100% actual resolution</td>
+              <td class="n"><kbd>1</kbd></td>
+            </tr>
+            <tr>
+              <td>Zoom in / zoom out</td>
+              <td class="n"><kbd>+</kbd> / <kbd>-</kbd></td>
+            </tr>
+            <tr>
+              <td>Rotate 90° clockwise</td>
+              <td class="n"><kbd>R</kbd></td>
+            </tr>
+            <tr>
+              <td>Flip horizontal</td>
+              <td class="n"><kbd>H</kbd></td>
+            </tr>
+            <tr>
+              <td>Copy image to clipboard</td>
+              <td class="n"><kbd>C</kbd> or <kbd>Ctrl+C</kbd></td>
+            </tr>
+            <tr>
+              <td>Download high resolution image</td>
+              <td class="n"><kbd>D</kbd></td>
+            </tr>
+            <tr>
+              <td>Fine pan adjustment</td>
+              <td class="n"><kbd>Arrow keys</kbd></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Floating Toast (§7.17) -->
+    <div id="toast" class="toast">Settings saved.</div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

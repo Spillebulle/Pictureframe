@@ -1,0 +1,444 @@
+@font-face {
+  font-family: "Archivo";
+  src: url("../fonts/Archivo.ttf") format("truetype");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--window);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: var(--lh);
+  padding: 32px 16px 80px;
+}
+
+.shell {
+  max-width: 740px;
+  margin: 0 auto;
+}
+
+/* ── Header Strip (§7.1, §9) ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mark {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-ctl);
+  display: block;
+}
+
+.title {
+  font-size: var(--text-page);
+  font-weight: 600;
+  color: var(--text-strong);
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  font-size: var(--text-small);
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* ── Primary Button (§7.6) ───────────────────────────────────────────────── */
+.btn-primary {
+  height: var(--h-button);
+  padding: 0 14px;
+  border-radius: var(--r-ctl);
+  background-color: var(--accent, #6a4cce);
+  color: var(--accent-ink, #FFFFFF);
+  font-family: var(--font-ui);
+  font-size: var(--text-control);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--t-hover) var(--ease), transform var(--t-hover) var(--ease);
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* ── Cards (§7.5) ────────────────────────────────────────────────────────── */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--chrome);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 16px 20px;
+}
+
+.card-head {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.card-head h2 {
+  font-size: var(--text-heading);
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+/* ── Form Rows ───────────────────────────────────────────────────────────── */
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line-soft);
+  gap: 20px;
+}
+
+.form-row:last-of-type {
+  border-bottom: none;
+}
+
+.form-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 75%;
+}
+
+.label {
+  font-size: var(--text-control);
+  font-weight: 500;
+  color: var(--text-strong);
+}
+
+.desc {
+  font-size: var(--text-tiny);
+  color: var(--text-muted);
+}
+
+/* ── Notice Box (§7.17) ──────────────────────────────────────────────────── */
+.notice {
+  margin-top: 12px;
+  background: var(--dock);
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px;
+  border-radius: var(--r-ctl);
+  font-size: var(--text-tiny);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.notice code {
+  background: var(--control);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: var(--font-figure);
+  color: var(--text-strong);
+}
+
+/* ── Controls (§7.7, §7.8, §7.10) ────────────────────────────────────────── */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.pill {
+  position: absolute;
+  inset: 0;
+  background-color: var(--rail);
+  border-radius: 9px;
+  transition: background-color var(--t-hover) var(--ease);
+}
+
+.pill::before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--knob);
+  border-radius: 50%;
+  box-shadow: var(--shadow-knob);
+  transition: transform var(--t-open) var(--ease);
+}
+
+input:checked + .pill {
+  background-color: var(--accent);
+}
+
+input:checked + .pill::before {
+  transform: translateX(16px);
+}
+
+.number-input {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  padding: 4px 10px;
+  font-family: var(--font-ui);
+  font-size: var(--text-control);
+  height: 26px;
+  outline: none;
+}
+
+.number-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+/* ── Painted Dropdown (§7.7, styleguide.src.html) ────────────────────────── */
+.ddwrap {
+  position: relative;
+  display: inline-block;
+}
+
+.dd.alone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 26px;
+  padding: 0 10px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  font-family: var(--font-ui);
+  font-size: var(--text-control);
+  color: var(--text);
+  cursor: pointer;
+  min-width: 210px;
+  outline: none;
+  transition: border-color var(--t-hover) var(--ease), box-shadow var(--t-hover) var(--ease);
+}
+
+.dd.alone:hover, .dd.alone:focus {
+  border-color: var(--line-dashed);
+}
+
+.dd.alone.open {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+.dd .v {
+  color: var(--text-strong);
+  font-weight: 500;
+}
+
+.dd .chev {
+  width: 12px;
+  height: 12px;
+  color: var(--text-dim);
+  transition: transform var(--t-hover) var(--ease);
+  flex: none;
+}
+
+.dd.alone.open .chev {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu List (§7.1: popover fill, line-popover edge, radius 8, shadow-menu) */
+.menu.ddlist {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 100%;
+  width: max-content;
+  background: var(--popover);
+  border: 1px solid var(--line-popover);
+  border-radius: var(--r-card);
+  padding: 4px;
+  box-shadow: var(--shadow-menu);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.menu .it {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: var(--text-control);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--t-hover) var(--ease), color var(--t-hover) var(--ease);
+}
+
+.menu .it:hover {
+  background: var(--control-hover);
+  color: var(--text-strong);
+}
+
+.menu .it.cur {
+  background: var(--control);
+  color: var(--text-strong);
+  font-weight: 500;
+}
+
+.menu .it .chk {
+  width: 12px;
+  height: 12px;
+  color: var(--accent);
+  stroke: currentColor;
+  flex: none;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rail-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 120px;
+  height: 3px;
+  background: var(--rail);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.rail-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--knob);
+  box-shadow: var(--shadow-knob);
+  cursor: pointer;
+  transition: transform var(--t-hover) var(--ease);
+}
+
+.rail-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.mono.figure {
+  font-family: var(--font-figure);
+  font-size: var(--text-tiny);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  font-weight: 500;
+  min-width: 42px;
+  text-align: right;
+}
+
+/* ── Table (§7.13, styleguide.src.html table.t) ──────────────────────────── */
+table.t {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--text-control);
+}
+
+table.t th {
+  text-align: left;
+  font-weight: 400;
+  color: var(--text-dim);
+  font-size: var(--text-tiny);
+  height: 26px;
+  border-bottom: 1px solid var(--line);
+}
+
+table.t td {
+  padding: 7px 8px 7px 0;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: middle;
+  color: var(--text);
+}
+
+table.t tr:last-child td {
+  border-bottom: none;
+}
+
+table.t td.n, table.t th.n {
+  text-align: right;
+  font-family: var(--font-figure);
+  font-size: var(--text-tiny);
+}
+
+kbd {
+  background: var(--control);
+  border: 1px solid var(--line);
+  border-radius: var(--r-tight);
+  padding: 1px 5px;
+  font-family: var(--font-figure);
+  font-size: 10.5px;
+  color: var(--text-strong);
+}
+
+/* ── Toast Notification (§7.17) ─────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--popover);
+  border: 1px solid var(--line-popover);
+  border-radius: var(--r-card);
+  padding: 8px 16px;
+  color: var(--text-strong);
+  font-size: var(--text-control);
+  font-weight: 500;
+  box-shadow: var(--shadow-float);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--t-open) var(--ease), transform var(--t-open) var(--ease);
+  pointer-events: none;
+  z-index: 100;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
