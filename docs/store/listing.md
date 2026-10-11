@@ -44,6 +44,9 @@ Open source under GPL-3.0: https://github.com/Spillebulle/Pictureframe
 
 **Small promo tile** (440 × 280): `promo-small-440x280.png`.
 
+**Marquee promo tile** (1400 × 560): `promo-marquee-1400x560.png`, the
+banner group at the banner's own proportions (passes `banner.py --check`).
+
 **Official URL**: none (it needs a verified domain). **Homepage URL**:
 `https://github.com/Spillebulle/Pictureframe`. **Support URL**:
 `https://github.com/Spillebulle/Pictureframe/issues`.
