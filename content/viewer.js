@@ -341,6 +341,12 @@ svg.i * {
       this.flipH = false;
       this.flipV = false;
 
+      // Animation adapted from BetterViewer's viewport controller (MIT).
+      // See content/THIRD_PARTY_NOTICES.md for attribution and license.
+      this.zoomAnimation = null;
+      this.zoomFrame = 0;
+      this.lastZoomFrame = 0;
+
       // Pan state
       this.isPanning = false;
       this.dragStartX = 0;
@@ -589,6 +595,7 @@ svg.i * {
 
     open(imageUrl, metadata = {}) {
       if (!imageUrl) return;
+      this.stopZoomAnimation();
       this.imageUrl = imageUrl;
       this.metadata = metadata;
 
@@ -611,7 +618,7 @@ svg.i * {
       typeSpan.innerHTML = `<strong>${ext}</strong>`;
 
       this.img.onload = () => {
-        this.fitToScreen();
+        this.fitToScreen(false);
         const resSpan = this.shadow.getElementById('pf-status-res');
         resSpan.innerHTML = `<strong>${this.img.naturalWidth} × ${this.img.naturalHeight} px</strong>`;
       };
@@ -628,6 +635,7 @@ svg.i * {
     close() {
       if (!this.isOpen) return;
       this.isOpen = false;
+      this.stopZoomAnimation();
       this.overlay.classList.remove('pf-active');
 
       window.removeEventListener('keydown', this.boundOnKeyDown, true);
@@ -639,7 +647,8 @@ svg.i * {
       }, 160);
     }
 
-    fitToScreen() {
+    fitToScreen(animate = true) {
+      const from = this.viewState();
       const vWidth = window.innerWidth;
       const vHeight = window.innerHeight;
       const imgWidth = this.img.naturalWidth || 800;
@@ -656,10 +665,11 @@ svg.i * {
       this.translateX = (vWidth - imgWidth * this.scale) / 2;
       this.translateY = (vHeight - imgHeight * this.scale) / 2;
 
-      this.applyTransform();
+      this.animateView(from, this.viewState(), animate);
     }
 
     setActualSize() {
+      const from = this.viewState();
       const vWidth = window.innerWidth;
       const vHeight = window.innerHeight;
       const imgWidth = this.img.naturalWidth || 800;
@@ -669,7 +679,7 @@ svg.i * {
       this.translateX = (vWidth - imgWidth) / 2;
       this.translateY = (vHeight - imgHeight) / 2;
 
-      this.applyTransform();
+      this.animateView(from, this.viewState());
     }
 
     onWheel(e) {
@@ -680,40 +690,107 @@ svg.i * {
       const cursorX = e.clientX - rect.left;
       const cursorY = e.clientY - rect.top;
 
-      let direction = e.deltaY < 0 ? 1 : -1;
-      if (this.settings.invertZoom) direction = -direction;
-
-      const factor = direction > 0 ? this.settings.zoomSpeed : 1 / this.settings.zoomSpeed;
-      const newScale = Math.min(Math.max(this.scale * factor, this.settings.minZoom), this.settings.maxZoom);
-
-      if (newScale === this.scale) return;
-
-      const actualFactor = newScale / this.scale;
-
-      this.translateX = cursorX - (cursorX - this.translateX) * actualFactor;
-      this.translateY = cursorY - (cursorY - this.translateY) * actualFactor;
-      this.scale = newScale;
-
-      this.applyTransform();
+      if (e.deltaY === 0 || this.isPanning) return;
+      // Normalize line/page wheel units; 100 px keeps the configured notch speed.
+      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
+      const delta = Math.max(-300, Math.min(300, e.deltaY * unit));
+      const direction = this.settings.invertZoom ? 1 : -1;
+      const factor = Math.exp(direction * delta / 100 * Math.log(this.settings.zoomSpeed));
+      this.zoomAt(factor, cursorX, cursorY);
     }
 
     zoomByCenter(factor) {
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
+      this.zoomAt(factor, window.innerWidth / 2, window.innerHeight / 2);
+    }
 
-      const newScale = Math.min(Math.max(this.scale * factor, this.settings.minZoom), this.settings.maxZoom);
-      const actualFactor = newScale / this.scale;
+    viewState() {
+      return { scale: this.scale, x: this.translateX, y: this.translateY };
+    }
 
-      this.translateX = centerX - (centerX - this.translateX) * actualFactor;
-      this.translateY = centerY - (centerY - this.translateY) * actualFactor;
-      this.scale = newScale;
+    setView(state) {
+      this.scale = state.scale;
+      this.translateX = state.x;
+      this.translateY = state.y;
+    }
 
-      this.applyTransform();
+    stopZoomAnimation() {
+      if (this.zoomFrame) cancelAnimationFrame(this.zoomFrame);
+      this.zoomFrame = 0;
+      this.zoomAnimation = null;
+    }
+
+    reducedMotion() {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
+    zoomAt(factor, ax, ay) {
+      const pending = this.zoomAnimation;
+      const base = pending ? (pending.kind === 'anchor' ? pending.target : pending.to.scale) : this.scale;
+      const target = Math.min(this.settings.maxZoom, Math.max(this.settings.minZoom, base * factor));
+      // Capture from the visible transform when the anchor moves, avoiding a jump.
+      const wx = (ax - this.translateX) / this.scale;
+      const wy = (ay - this.translateY) / this.scale;
+      if (this.reducedMotion()) {
+        this.setView({ scale: target, x: ax - wx * target, y: ay - wy * target });
+        this.applyTransform();
+        return;
+      }
+      this.zoomAnimation = { kind: 'anchor', target, ax, ay, wx, wy };
+      this.startZoomAnimation();
+    }
+
+    animateView(from, to, animate = true) {
+      this.stopZoomAnimation();
+      if (!animate || this.reducedMotion()) {
+        this.setView(to);
+        this.applyTransform();
+        return;
+      }
+      this.setView(from);
+      this.zoomAnimation = { kind: 'tween', from, to, start: performance.now(), duration: 320 };
+      this.startZoomAnimation();
+    }
+
+    startZoomAnimation() {
+      if (this.zoomFrame) return;
+      this.lastZoomFrame = performance.now();
+      const step = (now) => {
+        const dt = Math.min(64, Math.max(0, now - this.lastZoomFrame));
+        this.lastZoomFrame = now;
+        const a = this.zoomAnimation;
+        if (!a) { this.zoomFrame = 0; return; }
+        let done;
+        if (a.kind === 'anchor') {
+          const current = Math.log(this.scale);
+          const target = Math.log(a.target);
+          done = Math.abs(target - current) < 0.0015;
+          const scale = done ? a.target : Math.exp(current + (target - current) * (1 - Math.exp(-dt / 55)));
+          this.setView({ scale, x: a.ax - a.wx * scale, y: a.ay - a.wy * scale });
+        } else {
+          const t = Math.min(1, (now - a.start) / a.duration);
+          const e = 1 - (1 - t) ** 3;
+          this.setView(t === 1 ? a.to : {
+            scale: Math.exp(Math.log(a.from.scale) + (Math.log(a.to.scale) - Math.log(a.from.scale)) * e),
+            x: a.from.x + (a.to.x - a.from.x) * e,
+            y: a.from.y + (a.to.y - a.from.y) * e
+          });
+          done = t === 1;
+        }
+        this.applyTransform(false);
+        if (done) {
+          this.zoomFrame = 0;
+          this.zoomAnimation = null;
+        } else {
+          this.zoomFrame = requestAnimationFrame(step);
+        }
+      };
+      this.zoomFrame = requestAnimationFrame(step);
     }
 
     onPointerDown(e) {
       if (e.button !== 0) return;
 
+      this.stopZoomAnimation();
       this.isPanning = true;
       this.hasDragged = false;
       this.dragStartX = e.clientX;
@@ -795,7 +872,8 @@ svg.i * {
       this.applyTransform();
     }
 
-    applyTransform() {
+    applyTransform(stopAnimation = true) {
+      if (stopAnimation) this.stopZoomAnimation();
       const transform = `translate3d(${this.translateX}px, ${this.translateY}px, 0) scale(${this.scale}) rotate(${this.rotation}deg) scaleX(${this.flipH ? -1 : 1}) scaleY(${this.flipV ? -1 : 1})`;
       this.canvas.style.transform = transform;
 
