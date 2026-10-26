@@ -70,6 +70,21 @@ If Pictureframe opens something it should not, or ignores a picture it should op
 
 There is no build step. The folder is the extension: load it unpacked as above, and after editing a file press the reload arrow on the extension card and reload the page you are testing. Open `test.html` to check plain images, linked images, a blocked right click, a transparent shield and a canvas on one page.
 
+## Smooth zoom
+
+Wheel, button and keyboard zoom ease toward the requested scale while keeping
+its anchor fixed. Fit and actual-size changes use a 320 ms ease-out transition.
+Dragging or changing orientation interrupts the animation immediately. The
+viewer's zoom speed and invert-zoom settings still apply, and animations respect
+`prefers-reduced-motion`.
+
+The animation is adapted from [BetterViewer](https://github.com/Ademking/BetterViewer);
+see `content/THIRD_PARTY_NOTICES.md` for its MIT license notice.
+
+Run `node tests/zoom.cjs` for dependency-free animation-controller checks. These
+use a simulated clock and DOM stubs; use `test.html` with the extension loaded
+for visual and site-interaction checks.
+
 ## Licence
 
 GPL-3.0, see [LICENSE](LICENSE). Includes Archivo (SIL Open Font License, `fonts/OFL.txt`) and icon geometry from Lucide (ISC).
