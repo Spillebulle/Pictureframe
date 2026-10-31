@@ -116,7 +116,7 @@ jobs:
           echo "Uploading $ZIP"
           upload=$(curl -sS --fail-with-body -X POST -H "$auth" \
             -H 'Content-Type: application/zip' --data-binary "@$ZIP" \
-            "$api/upload/v2/$item:upload")
+            "$api/upload/v2/$item:upload") || { echo "::error::Upload refused: $upload"; exit 1; }
           echo "$upload"
           state=$(jq -r .uploadState <<<"$upload")
           for _ in $(seq 1 30); do
@@ -133,7 +133,7 @@ jobs:
           echo "Submitting for review"
           publish=$(curl -sS --fail-with-body -X POST -H "$auth" \
             -H 'Content-Type: application/json' -d '{"publishType":"DEFAULT_PUBLISH"}' \
-            "$api/v2/$item:publish")
+            "$api/v2/$item:publish") || { echo "::error::Submit refused: $publish"; exit 1; }
           echo "$publish"
           echo "::notice::Submitted to the Chrome Web Store: $(jq -r .state <<<"$publish"). It goes live when review passes."
 
