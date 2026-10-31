@@ -9,7 +9,7 @@
 <p align="center">
   A browser extension to <b>inspect, pan and cursor-zoom any picture</b> on the web.
   <br>
-  Manifest V3 · Chrome, Edge and Brave · Nothing leaves your browser
+  Manifest V3 · Chrome, Edge, Brave and Firefox · Nothing leaves your browser
 </p>
 
 <img alt="The Pictureframe viewer open over a web page: a photograph of a purple-lit stairwell fitted to the window at 76 %, the toolbar above it and the size readout below" src="docs/images/window.png">
@@ -21,8 +21,9 @@
 | Browser | How |
 | :--- | :--- |
 | Chrome, Edge, Brave | Clone or download this repository, open `chrome://extensions`, turn on **Developer mode**, choose **Load unpacked** and pick the folder. |
+| Firefox 140 or later | Open `about:debugging`, choose **This Firefox**, then **Load Temporary Add-on** and pick `manifest.json` in the folder. Firefox removes it when it restarts. |
 
-Any Chromium browser that supports Manifest V3 should work. Pin the extension to the toolbar to reach its settings.
+Any Chromium browser that supports Manifest V3 should work. Pin the extension to the toolbar to reach its settings. In Firefox, if the popup says Pictureframe has no site access, choose **Allow on all sites**.
 
 ## Click a picture, it opens
 
@@ -49,7 +50,7 @@ If Pictureframe opens something it should not, or ignores a picture it should op
 - **Not on the Chrome Web Store.** Install it unpacked for now.
 - **Canvases, inline SVG and videos open only on purpose.** Spreadsheets, charts and maps draw on these, so a plain click never opens them; use <kbd>Alt</kbd> + click or the corner button.
 - **The right click unblocker is blunt.** It can replace a site's own right click menu (Google Sheets, for example) with the browser's. Turn it off in the popup on those sites.
-- **Firefox is untested.**
+- **Firefox is new.** It runs the same code as Chrome, but has had less use. [Report a misfire](#reporting-a-misfire) if it behaves differently there.
 
 ## Controls
 

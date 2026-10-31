@@ -12,10 +12,12 @@ transparent `<div>` shields sites put over photos.
 There is **no build step, no package.json and no test runner**. The repository
 is https://github.com/Spillebulle/Pictureframe; misfire reports from the
 reporter land in its Issues.
-The folder *is* the extension: `chrome://extensions` → Developer mode → Load
-unpacked → pick this directory. After editing any file, hit the reload arrow on
-the extension card **and reload the page under test** — content scripts are only
-re-injected on navigation.
+The folder *is* the extension, for Chrome and Firefox alike: `chrome://extensions`
+→ Developer mode → Load unpacked → pick this directory; in Firefox,
+`about:debugging` → This Firefox → Load Temporary Add-on → pick `manifest.json`.
+After editing any file, hit the reload arrow on the extension card (Firefox:
+**Reload** in `about:debugging`) **and reload the page under test** — content
+scripts are only re-injected on navigation.
 
 ## Verifying a change
 
@@ -47,6 +49,27 @@ JWT with `openssl` and is skipped with a notice until the secret
 screenshots, privacy tab) is only editable in the Developer Dashboard. A
 failed store step can be retried with "Re-run failed jobs"; the release step
 is idempotent.
+
+The same zip goes to Firefox. After packaging, `web-ext lint` (the linter AMO
+runs) must report no errors; its `background.service_worker` warning is
+expected. The last step runs `web-ext sign --channel listed` with
+`docs/store/amo-metadata.json` (used only when the add-on is first created),
+even if the Chrome step failed, and is skipped until the secrets
+`AMO_JWT_ISSUER` / `AMO_JWT_SECRET` exist.
+
+### Firefox
+
+One `manifest.json` serves both browsers. `background` lists both
+`service_worker` (Chrome) and `scripts` (Firefox, which has no extension service
+worker); each ignores the other. `browser_specific_settings.gecko` holds the
+add-on ID `pictureframe@spillebulle` (**permanent once uploaded to AMO**),
+`strict_min_version` 140 (needed for `data_collection_permissions`, which AMO
+requires) and `data_collection_permissions: none` — keep that true, as with
+`docs/privacy.md`. The code calls `chrome.*` with promises, which Firefox allows
+in MV3; there is no `browser.*` polyfill. Firefox lets the user withhold
+`<all_urls>`, so the popup checks `chrome.permissions` and shows an **Allow on
+all sites** prompt. On `moz-extension:` pages, the popup and options hide the
+Chrome Web Store link until `AMO_URL` in `popup.js` / `options.js` is set.
 
 `docs/store/` holds what only the dashboard accepts: `listing.md` (text to
 paste, permission justifications), the five 1280 × 800 screenshots, the

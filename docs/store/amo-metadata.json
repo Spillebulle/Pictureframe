@@ -1,0 +1,14 @@
+{
+  "categories": {
+    "firefox": [
+      "photos-music-videos"
+    ]
+  },
+  "summary": {
+    "en-US": "Click any picture to open it fullscreen with cursor zoom, pan and rotate. Unblocks right click and sees through image shields."
+  },
+  "version": {
+    "license": "GPL-3.0-only",
+    "approval_notes": "No build step: the submitted files are the source, as in https://github.com/Spillebulle/Pictureframe. The innerHTML assignments in content/viewer.js and content/reporter.js write static markup, numbers, or text passed through escapeHtml()."
+  }
+}

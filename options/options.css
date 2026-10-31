@@ -467,3 +467,8 @@ kbd {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* The hidden attribute must win over class display rules. */
+[hidden] {
+  display: none !important;
+}

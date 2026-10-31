@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4
+
+- Pictureframe now runs in Firefox 140 and later, from the same package as Chrome.
+- In Firefox, the popup tells you when Pictureframe has no access to websites and lets you allow it in one click.
+- Releases are submitted to Firefox Add-ons as well as the Chrome Web Store.
+
 ## 1.0.3
 
 - The popup and the settings page link to the Chrome Web Store listing and the GitHub project.

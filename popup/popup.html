@@ -21,6 +21,15 @@
 
   <!-- Content Stack (§7, §9) -->
   <main class="content">
+    <!-- Site access: Firefox lets the user withhold <all_urls>; nothing works without it -->
+    <div class="report-block" id="accessBlock" hidden>
+      <div class="row-info">
+        <span class="label">Pictureframe has no site access</span>
+        <span class="desc">Without it, pictures will not open on any page.</span>
+      </div>
+      <button type="button" class="btn" id="grantAccess" title="Let Pictureframe run on every site.">Allow on all sites</button>
+    </div>
+
     <div class="row">
       <div class="row-info">
         <label for="smartClickEnabled" class="label">Smart click detection</label>
@@ -158,7 +167,7 @@
 
   <!-- Link Strip: store listing and source -->
   <nav class="linkbar">
-    <a href="https://chromewebstore.google.com/detail/kjhnkokjllmflaendefmhhfdnbechbli" target="_blank" class="footlink" title="Rate or review Pictureframe.">
+    <a href="https://chromewebstore.google.com/detail/kjhnkokjllmflaendefmhhfdnbechbli" target="_blank" class="footlink" data-store title="Rate or review Pictureframe.">
       <svg class="i" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path>
         <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
@@ -166,7 +175,7 @@
         <path d="M2 7h20"></path>
         <path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"></path>
       </svg>
-      Chrome Web Store
+      <span data-store-name>Chrome Web Store</span>
     </a>
     <a href="https://github.com/Spillebulle/Pictureframe" target="_blank" class="footlink" title="Source code and issues.">
       <svg class="i" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">

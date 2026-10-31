@@ -440,3 +440,8 @@ kbd {
 .desclink:hover {
   color: var(--text-strong);
 }
+
+/* The hidden attribute must win over class display rules. */
+[hidden] {
+  display: none !important;
+}

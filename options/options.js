@@ -18,6 +18,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const saveBtn = document.getElementById('saveBtn');
   const toast = document.getElementById('toast');
 
+  // Point the store link at the store this copy came from. Set AMO_URL once the
+  // addons.mozilla.org listing exists; until then Firefox shows no store link.
+  const AMO_URL = '';
+  if (location.protocol === 'moz-extension:') {
+    document.querySelectorAll('[data-store]').forEach(a => {
+      if (!AMO_URL) { a.hidden = true; return; }
+      a.href = AMO_URL;
+      a.querySelector('[data-store-name]').textContent = 'Firefox Add-ons';
+    });
+  }
+
   // Painted Dropdown Elements
   const ddTrigger = document.getElementById('modifierKeyTrigger');
   const ddMenu = document.getElementById('modifierKeyMenu');

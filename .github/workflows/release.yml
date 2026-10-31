@@ -1,11 +1,16 @@
 # Push a tag vX.Y.Z (matching manifest.json and a "## X.Y.Z" CHANGELOG section)
-# and this packages the extension, makes the GitHub release, and, once the
-# store is configured, uploads and submits it to the Chrome Web Store.
+# and this packages the extension, makes the GitHub release, and, once each
+# store is configured, uploads and submits it to the Chrome Web Store and to
+# addons.mozilla.org. One zip serves both browsers.
 #
-# Store configuration (skipped until all three exist):
+# Chrome Web Store (skipped until all three exist):
 #   secret   CWS_SERVICE_ACCOUNT_KEY  JSON key of the service account linked in the dashboard
 #   variable CWS_PUBLISHER_ID         Developer Dashboard > Publisher > Settings
 #   variable CWS_EXTENSION_ID         the item's 32-letter ID
+#
+# addons.mozilla.org (skipped until both exist):
+#   secret   AMO_JWT_ISSUER           Developer Hub > Tools > Manage API Keys
+#   secret   AMO_JWT_SECRET           same page
 
 name: Release
 
@@ -51,12 +56,19 @@ jobs:
 
       - name: Package
         run: |
-          zip -r -X "${{ steps.v.outputs.zip }}" \
-            manifest.json background.js tokens.css \
-            content popup options icons fonts
+          mkdir build
+          cp -r manifest.json background.js tokens.css \
+            content popup options icons fonts build/
+          (cd build && zip -r -X "../${{ steps.v.outputs.zip }}" .)
           unzip -l "${{ steps.v.outputs.zip }}"
 
+      # Mozilla's linter, the same one AMO runs on upload. Fails only on errors;
+      # the background.service_worker warning is expected (Firefox uses scripts).
+      - name: Firefox lint
+        run: npx --yes web-ext@8 lint --source-dir build
+
       - name: GitHub release
+        id: gh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -124,3 +136,23 @@ jobs:
             "$api/v2/$item:publish")
           echo "$publish"
           echo "::notice::Submitted to the Chrome Web Store: $(jq -r .state <<<"$publish"). It goes live when review passes."
+
+      - name: Firefox Add-ons
+        # Runs even if the Chrome Web Store step failed; the stores are independent.
+        if: ${{ !cancelled() && steps.gh.outcome == 'success' }}
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          if [ -z "$AMO_JWT_ISSUER" ] || [ -z "$AMO_JWT_SECRET" ]; then
+            echo "::notice::addons.mozilla.org is not configured; skipped. The zip on the GitHub release also loads in Firefox."
+            exit 0
+          fi
+          set -euo pipefail
+          # Listed channel: AMO signs it and queues it for review. The metadata
+          # (summary, category, licence) only matters when the add-on is new.
+          npx --yes web-ext@8 sign --source-dir build --channel listed \
+            --amo-metadata docs/store/amo-metadata.json \
+            --approval-timeout 0 \
+            --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET"
+          echo "::notice::Submitted to addons.mozilla.org. It goes live when review passes."

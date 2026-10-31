@@ -13,6 +13,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   const zoomSpeedVal = document.getElementById('zoomSpeedVal');
   const openOptions = document.getElementById('openOptions');
 
+  // Point the store link at the store this copy came from. Set AMO_URL once the
+  // addons.mozilla.org listing exists; until then Firefox shows no store link.
+  const AMO_URL = '';
+  if (location.protocol === 'moz-extension:') {
+    document.querySelectorAll('[data-store]').forEach(a => {
+      if (!AMO_URL) { a.hidden = true; return; }
+      a.href = AMO_URL;
+      a.querySelector('[data-store-name]').textContent = 'Firefox Add-ons';
+    });
+  }
+
+  // Firefox lets the user withhold host access (at install or later in
+  // about:addons). Without it no content script runs, so say so here.
+  const ALL_SITES = { origins: ['<all_urls>'] };
+  const accessBlock = document.getElementById('accessBlock');
+  if (chrome.permissions && !(await chrome.permissions.contains(ALL_SITES))) {
+    accessBlock.hidden = false;
+  }
+  document.getElementById('grantAccess').addEventListener('click', async () => {
+    // Must be called straight from the click; Firefox closes the popup when
+    // its prompt opens, so the result may never come back here.
+    if (await chrome.permissions.request(ALL_SITES)) accessBlock.hidden = true;
+  });
+
   // Painted Dropdown Elements
   const ddTrigger = document.getElementById('modifierKeyTrigger');
   const ddMenu = document.getElementById('modifierKeyMenu');
