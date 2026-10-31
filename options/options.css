@@ -62,6 +62,31 @@ body {
   margin-top: 1px;
 }
 
+.headlinks {
+  display: flex;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.headlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--text-tiny);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--t-hover) var(--ease);
+}
+
+.headlink:hover {
+  color: var(--text-strong);
+}
+
+.headlink .i {
+  flex: none;
+}
+
 /* ── Primary Button (§7.6) ───────────────────────────────────────────────── */
 .btn-primary {
   height: var(--h-button);

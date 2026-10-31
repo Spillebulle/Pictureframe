@@ -363,6 +363,27 @@ kbd {
   text-decoration: none;
 }
 
+/* ── Link Strip (below the footer) ───────────────────────────────────────── */
+.linkbar {
+  height: 26px;
+  background: var(--chrome);
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.linkbar .footlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.linkbar .i {
+  flex: none;
+}
+
 /* ── Misfire Reporter ────────────────────────────────────────────────────── */
 .report-block {
   display: flex;

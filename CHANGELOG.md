@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- The popup and the settings page link to the Chrome Web Store listing and the GitHub project.
+
 ## 1.0.2
 
 - Zooming past 4× shows sharp pixels again instead of a blur.
