@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.5
+
+- The corner button shows only on pictures that a click would open, so it no longer covers links, app tiles or buttons.
+- On logos and pictures shrunk to fit their box, the corner button sits on the picture itself instead of on the empty space beside it.
+- Misfire reports say whether the corner button was showing and where.
+
 ## 1.0.4
 
 - Pictureframe now runs in Firefox 140 and later, from the same package as Chrome.

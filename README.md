@@ -48,7 +48,7 @@ If Pictureframe opens something it should not, or ignores a picture it should op
 ## What is not there yet
 
 - **Not on the Chrome Web Store.** Install it unpacked for now.
-- **Canvases, inline SVG and videos open only on purpose.** Spreadsheets, charts and maps draw on these, so a plain click never opens them; use <kbd>Alt</kbd> + click or the corner button.
+- **Canvases, inline SVG and videos open only on purpose.** Spreadsheets, charts and maps draw on these, so a plain click never opens them; use <kbd>Alt</kbd> + click or right click → **Inspect in Pictureframe**.
 - **The right click unblocker is blunt.** It can replace a site's own right click menu (Google Sheets, for example) with the browser's. Turn it off in the popup on those sites.
 - **Firefox is new.** It runs the same code as Chrome, but has had less use. [Report a misfire](#reporting-a-misfire) if it behaves differently there.
 

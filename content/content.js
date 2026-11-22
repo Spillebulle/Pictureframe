@@ -280,14 +280,61 @@
     return hoverBadge;
   }
 
-  function positionHoverBadge(el) {
-    if (!settings.hoverIconEnabled || !settings.enabled) {
-      hideHoverBadge();
-      return;
-    }
+  // Where the pixels actually are. An <img> with object-fit: contain (logo
+  // tiles, avatars) paints a smaller picture inside its box; anchoring the
+  // badge to the box parks it on empty card background, where it steals the
+  // click meant for the card's link.
+  function paintedRect(el) {
+    const r = el.getBoundingClientRect();
+    if (el.tagName !== 'IMG' || !el.naturalWidth || !el.naturalHeight) return r;
+    let cs;
+    try { cs = window.getComputedStyle(el); } catch (e) { return r; }
+    const fit = cs.objectFit;
+    if (fit !== 'contain' && fit !== 'scale-down' && fit !== 'none') return r;
 
-    const rect = el.getBoundingClientRect();
-    if (rect.width < settings.hoverIconMinSize || rect.height < settings.hoverIconMinSize) {
+    const px = v => parseFloat(v) || 0;
+    const left = r.left + px(cs.borderLeftWidth) + px(cs.paddingLeft);
+    const top = r.top + px(cs.borderTopWidth) + px(cs.paddingTop);
+    const cw = r.right - px(cs.borderRightWidth) - px(cs.paddingRight) - left;
+    const ch = r.bottom - px(cs.borderBottomWidth) - px(cs.paddingBottom) - top;
+    if (cw <= 0 || ch <= 0) return r;
+
+    let s = fit === 'none' ? 1 : Math.min(cw / el.naturalWidth, ch / el.naturalHeight);
+    if (fit === 'scale-down') s = Math.min(s, 1);
+    const w = el.naturalWidth * s;
+    const h = el.naturalHeight * s;
+
+    // object-position: two values, each a length or a percentage of the slack.
+    const pos = (cs.objectPosition || '50% 50%').split(/\s+/);
+    const place = (v, slack) => v && v.endsWith('%') ? slack * parseFloat(v) / 100 : (v ? px(v) : slack / 2);
+    const x = left + place(pos[0], cw - w);
+    const y = top + place(pos[1] || pos[0], ch - h);
+
+    // Clip to the content box (fit: none can overflow it).
+    const L = Math.max(x, left), T = Math.max(y, top);
+    const R = Math.min(x + w, left + cw), B = Math.min(y + h, top + ch);
+    return { left: L, top: T, right: R, bottom: B, width: Math.max(0, R - L), height: Math.max(0, B - T) };
+  }
+
+  // A modifier-free, not-yet-handled click, for asking explainClick() ahead of time.
+  const PLAIN_CLICK = { altKey: false, shiftKey: false, ctrlKey: false, metaKey: false, defaultPrevented: false };
+
+  // Viewport rect the badge would occupy over `el`, or null if it would not show.
+  // The badge only marks images a plain click would open: where the click is
+  // left to the page (links, app tiles, canvas), it shows nothing, so it can
+  // never contradict the click or steal one meant for the page.
+  function hoverBadgeRect(el) {
+    if (!el || !settings.hoverIconEnabled || !settings.enabled) return null;
+    if (!explainClick(el, PLAIN_CLICK).open) return null;
+    const rect = paintedRect(el);
+    if (rect.width < settings.hoverIconMinSize || rect.height < settings.hoverIconMinSize) return null;
+    return { left: rect.right - 34, top: rect.top + 8, width: 26, height: 26, image: rect };
+  }
+  window.__pictureframe_hoverBadgeRect = hoverBadgeRect;
+
+  function positionHoverBadge(el) {
+    const rect = hoverBadgeRect(el);
+    if (!rect) {
       hideHoverBadge();
       return;
     }
@@ -298,11 +345,8 @@
     const scrollX = window.scrollX || window.pageXOffset;
     const scrollY = window.scrollY || window.pageYOffset;
 
-    const top = rect.top + scrollY + 8;
-    const left = rect.right + scrollX - 34;
-
-    badge.style.top = `${top}px`;
-    badge.style.left = `${left}px`;
+    badge.style.top = `${rect.top + scrollY}px`;
+    badge.style.left = `${rect.left + scrollX}px`;
     badge.classList.add('pf-visible');
   }
 

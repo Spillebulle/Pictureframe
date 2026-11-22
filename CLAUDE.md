@@ -151,7 +151,10 @@ decision *and a reason string*, so the reporter can reuse it verbatim:
      names, or `cursor: pointer` on a non-`IMG`. If found, **yield**.
 
 The hover badge is a separate path: a throttled (40 ms) `mousemove` positions a
-26×26 button in the image's top-right corner for images ≥ `hoverIconMinSize`.
+26×26 button in the top-right corner of the *painted* image (`paintedRect()`
+honours `object-fit` / `object-position`) for images ≥ `hoverIconMinSize`, and
+only where `explainClick()` says a plain click would open — never on linked or
+interactive images, so it cannot steal a click meant for the page.
 It lives in the light DOM with its own injected `<style>` (not the Shadow DOM),
 so its hexes are duplicated there.
 

@@ -177,7 +177,7 @@
     <div class="card">
       <span class="badge badge-link">Test 2 · Wrapped in link</span>
       <h3>Smart conflict detection</h3>
-      <p>Clicking directly lets the page navigate. Hold <kbd>Alt</kbd> + click (or click the top-right hover badge) to force Pictureframe.</p>
+      <p>Clicking directly lets the page navigate. Hold <kbd>Alt</kbd> + click (or right click → Pictureframe) to force Pictureframe. No hover badge appears here.</p>
       <a href="https://unsplash.com" target="_blank">
         <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1600&q=80" alt="Mountain Landscape" />
       </a>
@@ -218,6 +218,19 @@
       <h3>Canvas rendering and export</h3>
       <p>Rendered dynamically to a canvas. Pictureframe can preview, zoom, copy, and export it as a PNG.</p>
       <canvas id="testCanvas" width="600" height="360"></canvas>
+    </div>
+
+    <!-- Test 7: Linked logo tile, object-fit: contain (Homarr-style dashboard) -->
+    <div class="card">
+      <span class="badge badge-link">Test 7 · Logo tile, object-fit</span>
+      <h3>Badge sits on the painted image</h3>
+      <p>A square logo in a wide box with <code>object-fit: contain</code>. Left, inside a link: no hover badge, the click is the link's. Right, plain: the badge sits on the logo's corner, not out on the empty box.</p>
+      <div style="display: flex; gap: 16px;">
+        <a href="https://example.com" target="_blank" style="display: block; flex: 1; cursor: pointer;">
+          <img src="icons/icon128.png" alt="Linked logo tile" style="width: 100%; height: 160px; object-fit: contain;" />
+        </a>
+        <img src="icons/icon128.png" alt="Plain logo tile" style="flex: 1; min-width: 0; height: 160px; object-fit: contain;" />
+      </div>
     </div>
   </div>
 

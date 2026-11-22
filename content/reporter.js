@@ -295,6 +295,21 @@
     L.push('  (Page handlers did not run; a page preventDefault() would also block a plain click.)');
     L.push('');
 
+    // The badge shows only where the decision above is OPENS; its rect tells
+    // whether it sat where the user clicked.
+    if (window.__pictureframe_hoverBadgeRect) {
+      const b = window.__pictureframe_hoverBadgeRect(target);
+      L.push('## Hover badge');
+      if (b) {
+        const i = b.image;
+        L.push(`  shown at (${Math.round(b.left)}, ${Math.round(b.top)}) 26×26, over painted image ` +
+          `(${Math.round(i.left)}, ${Math.round(i.top)}) ${Math.round(i.width)}×${Math.round(i.height)}`);
+      } else {
+        L.push('  Not shown for this element.');
+      }
+      L.push('');
+    }
+
     if (window.__pictureframe_findImageUnderPoint) {
       const under = window.__pictureframe_findImageUnderPoint(x, y);
       L.push('## Shield penetration (image found under the point)');
